@@ -133,6 +133,7 @@ class ManipulatorEnvironment(object):
     def reset(self, current_angles=None):
         if current_angles is None:
             current_angles = np.random.uniform(-np.pi, np.pi, size=self.nb_actions)
+        # current_angles = np.zeros(3)  # Enable for testing
         self.manipulator.set_current_angles(current_angles)
         self.available_moves = self.max_movements
         self.end_points = self.manipulator.compute_end_points(current_angles)
@@ -140,45 +141,53 @@ class ManipulatorEnvironment(object):
             self.set_goal()
         # self.set_goal(self.end_points[-1])  # Test goal is initial configuratuion
         self.goal_img = self.draw_goal()
-        obs = self._draw(current_angles[-1])
-        info = {'end_points': self.end_points,
+        obs = self._draw(sum(self.manipulator.get_current_angles()))
+        info = {'end_points': self.end_points, 'goal': self._goal,
                 'angles': self.manipulator.get_current_angles(), 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), info
 
     def step(self, action):
         self.available_moves -= 1
         self.end_points = self.manipulator.compute_end_points(action)
-        obs = self._draw(self.manipulator.get_current_angles()[-1])
-        reward = self.compute_reward(self.end_points[-1], action[-1])
+        gripper_orientation = sum(self.manipulator.get_current_angles())
+        obs = self._draw(gripper_orientation)
+        reward = self.compute_reward(self.end_points[-1], gripper_orientation)
         done = True if not self.available_moves or reward == 0 else False
-        info = {'end_points': self.end_points,
+        info = {'end_points': self.end_points, 'goal': self._goal,
                 'angles': self.manipulator.get_current_angles(), 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), reward, done, info
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-
-    def plot(ss):
-        fig = plt.figure()
-        nb = len(ss)
-        for i, s in enumerate(ss):
-            fig.add_subplot(nb*100 + 20 + i*nb+1)
-            plt.imshow(s[:, :, :3])
-            plt.title('state')
-            plt.axis('off')
-            fig.add_subplot(nb*100 + 20 + i*nb+2)
-            plt.imshow(s[:, :, 3], cmap='gray')
-            plt.title('goal')
-            plt.axis('off')
-        plt.show()
-
+    np.random.seed(113)
     env = ManipulatorEnvironment()
     s, info = env.reset()
-    print(s.shape, info)
-    # s = cv2.resize(s, (84, 84))
-    # plot(s)
-
-    ns, r, d, info = env.step(np.asarray([0, np.pi/2, np.pi/3]))
-    print(ns.shape, r, d, info)
-    plot([s, ns])
+    ns, r, d, info = env.step(np.asarray([0, np.pi/2, 0]))
+    print(info)
+    ns2, r, d, info = env.step(np.asarray([np.pi/2, 0, 0]))
+    print('\n', info)
+    ns3, r, d, info = env.step(np.asarray([0, 0, np.pi/2]))
+    print('\n', info)
+    fig = plt.figure()
+    fig.add_subplot(151)
+    plt.imshow(s[:, :, :3])
+    plt.title('1st config')
+    plt.axis('off')
+    fig.add_subplot(152)
+    plt.imshow(ns[:, :, :3])
+    plt.title('rotate 2nd pi/2')
+    plt.axis('off')
+    fig.add_subplot(153)
+    plt.imshow(ns2[:, :, :3])
+    plt.title('rotate 1st pi/2')
+    plt.axis('off')
+    fig.add_subplot(154)
+    plt.imshow(ns3[:, :, :3])
+    plt.title('rotate gripper pi/2')
+    plt.axis('off')
+    fig.add_subplot(155)
+    plt.imshow(ns[:, :, 3])
+    plt.title('goal')
+    plt.axis('off')
+    plt.show()
