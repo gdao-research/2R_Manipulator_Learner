@@ -2,17 +2,17 @@ import numpy as np
 import cv2
 
 
+def wrap_to_PI(angles):
+    ret = np.remainder(angles, 2*np.pi)
+    mask = np.abs(ret) > np.pi
+    ret[mask] -= 2*np.pi*np.sign(ret[mask])
+    return ret
+
 class Manipulator(object):
     def __init__(self, base, current_angles, links=(18, 13)):
         self._links = np.array(links, dtype='float32')
         self._base = base
         self._current_angles = np.array(current_angles, dtype='float32')
-
-    def wrap_to_PI(self, angles):
-        ret = np.remainder(angles, 2*np.pi)
-        mask = np.abs(ret) > np.pi
-        ret[mask] -= 2*np.pi*np.sign(ret[mask])
-        return ret
 
     def set_current_angles(self, current_angles):
         self._current_angles = np.array(current_angles)
@@ -22,8 +22,7 @@ class Manipulator(object):
 
     def compute_end_points(self, rot_angles):
         assert len(rot_angles) == len(self._links) + 1
-        self._current_angles = self.wrap_to_PI(
-            self._current_angles + np.array(rot_angles))
+        self._current_angles = wrap_to_PI(self._current_angles + np.array(rot_angles))
         x = 0
         y = 0
         end_points = [np.array([self._base[0], self._base[1]])]
@@ -67,7 +66,7 @@ class ManipulatorEnvironment(object):
     def is_goal(self, goal, pos, angle):
         # Goal is defined as almost same location & orientation different is less than 10 degree
         # -1 index is orientation
-        return np.linalg.norm(goal[:-1] - pos) < 10 and np.abs(goal[-1] - angle) < np.pi/18
+        return np.linalg.norm(goal[:-1] - pos) < 10 and np.abs(wrap_to_PI([goal[-1]]) - wrap_to_PI([angle]))[0] < np.pi/18
 
     def _goal_is_reachable(self, goal):
         if goal is None:
@@ -137,13 +136,13 @@ class ManipulatorEnvironment(object):
         self.manipulator.set_current_angles(current_angles)
         self.available_moves = self.max_movements
         self.end_points = self.manipulator.compute_end_points(current_angles)
-        while self._goal is None or self.is_goal(self._goal, self.end_points[-1], current_angles[-1]):
+        while self._goal is None or self.is_goal(self._goal, self.end_points[-1], sum(self.manipulator.get_current_angles())):
             self.set_goal()
-        # self.set_goal(self.end_points[-1])  # Test goal is initial configuratuion
+        # self.set_goal(np.concatenate([self.end_points[-1], [sum(self.manipulator.get_current_angles())]], axis=0))  # Test goal is initial configuratuion
         self.goal_img = self.draw_goal()
         obs = self._draw(sum(self.manipulator.get_current_angles()))
         info = {'end_points': self.end_points, 'goal': self._goal,
-                'angles': self.manipulator.get_current_angles(), 'links': self._links}
+                'angles': np.asarray(self.manipulator.get_current_angles())/np.pi*180, 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), info
 
     def step(self, action):
@@ -154,7 +153,7 @@ class ManipulatorEnvironment(object):
         reward = self.compute_reward(self.end_points[-1], gripper_orientation)
         done = True if not self.available_moves or reward == 0 else False
         info = {'end_points': self.end_points, 'goal': self._goal,
-                'angles': self.manipulator.get_current_angles(), 'links': self._links}
+                'angles': np.asarray(self.manipulator.get_current_angles())/np.pi*180, 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), reward, done, info
 
 
@@ -162,13 +161,14 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     np.random.seed(113)
     env = ManipulatorEnvironment()
-    s, info = env.reset()
-    ns, r, d, info = env.step(np.asarray([0, np.pi/2, 0]))
-    print(info)
-    ns2, r, d, info = env.step(np.asarray([np.pi/2, 0, 0]))
-    print('\n', info)
-    ns3, r, d, info = env.step(np.asarray([0, 0, np.pi/2]))
-    print('\n', info)
+    s, info0 = env.reset()
+    print(info0)
+    ns, r, d, info1 = env.step(np.asarray([0, np.pi/2, 0]))
+    print(info1)
+    ns2, r, d, info2 = env.step(np.asarray([np.pi/2, 0, 0]))
+    print('\n', info2)
+    ns3, r, d, info3 = env.step(np.asarray([0, 0, np.pi/2]))
+    print('\n', info3)
     fig = plt.figure()
     fig.add_subplot(151)
     plt.imshow(s[:, :, :3])
