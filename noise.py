@@ -15,3 +15,13 @@ class OUNoise(object):
 
     def reset(self):
         self.x_prev = self.x0 if self.x0 is not None else np.zeros_like(self.mu)
+
+    def __repr__(self):
+        return f'OUNois(mu={self.mu}, sigma={self.sigma}, x_prev={self.x_prev})'
+
+
+if __name__ == '__main__':
+    ou = OUNoise(np.zeros(3), 0.2*np.ones(3))
+    for i in range(50):
+        ou()
+        print(ou)
