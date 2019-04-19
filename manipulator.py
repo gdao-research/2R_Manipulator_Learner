@@ -56,6 +56,9 @@ class ManipulatorEnvironment(object):
     def get_goal(self):
         return self._goal
 
+    def get_links(self):
+        return self._links
+
     def compute_reward(self, end_effector, angle, goal=None):
         if goal is None:
             goal = np.copy(self._goal)
@@ -142,7 +145,7 @@ class ManipulatorEnvironment(object):
         self.goal_img = self.draw_goal()
         obs = self._draw(sum(self.manipulator.get_current_angles()))
         info = {'end_points': self.end_points, 'goal': self._goal,
-                'angles': np.asarray(self.manipulator.get_current_angles())/np.pi*180, 'links': self._links}
+                'angles': np.asarray(self.manipulator.get_current_angles()), 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), info
 
     def step(self, action):
@@ -153,7 +156,7 @@ class ManipulatorEnvironment(object):
         reward = self.compute_reward(self.end_points[-1], gripper_orientation)
         done = True if not self.available_moves or reward == 0 else False
         info = {'end_points': self.end_points, 'goal': self._goal,
-                'angles': np.asarray(self.manipulator.get_current_angles())/np.pi*180, 'links': self._links}
+                'angles': np.asarray(self.manipulator.get_current_angles()), 'links': self._links}
         return np.concatenate([obs, self.goal_img], axis=2), reward, done, info
 
 
