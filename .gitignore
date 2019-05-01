@@ -4,6 +4,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.csv
+success
+model
 
 # C extensions
 *.so
@@ -120,5 +122,8 @@ dmypy.json
 
 # Dummy folders
 logs*/
+log*
 test/
 results
+run.sh
+*pdf*

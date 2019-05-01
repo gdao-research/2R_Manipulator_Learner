@@ -64,12 +64,13 @@ class ManipulatorEnvironment(object):
             goal = np.copy(self._goal)
         if self.is_goal(goal, end_effector, angle):
             return 0
-        return -1
+        return -np.linalg.norm(goal[:-1] - end_effector)
 
     def is_goal(self, goal, pos, angle):
         # Goal is defined as almost same location & orientation different is less than 10 degree
         # -1 index is orientation
-        return np.linalg.norm(goal[:-1] - pos) < 10 and np.abs(wrap_to_PI([goal[-1]]) - wrap_to_PI([angle]))[0] < np.pi/18
+        # return np.linalg.norm(goal[:-1] - pos) < 10 and np.abs(wrap_to_PI([goal[-1]]) - wrap_to_PI([angle]))[0] < np.pi/18
+        return np.linalg.norm(goal[:-1] - pos) < 10
 
     def _goal_is_reachable(self, goal):
         if goal is None:
@@ -133,9 +134,9 @@ class ManipulatorEnvironment(object):
         return np.clip(links_img + end_effector_img, 0, 255)
 
     def reset(self, current_angles=None):
-        if current_angles is None:
-            current_angles = np.random.uniform(-np.pi, np.pi, size=self.nb_actions)
-        # current_angles = np.zeros(3)  # Enable for testing
+        # if current_angles is None:
+        #     current_angles = np.random.uniform(-np.pi, np.pi, size=self.nb_actions)
+        current_angles = np.zeros(3)  # Enable for testing
         self.manipulator.set_current_angles(current_angles)
         self.available_moves = self.max_movements
         self.end_points = self.manipulator.compute_end_points(current_angles)
