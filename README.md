@@ -33,6 +33,7 @@ To make this run faster, I reduced the image size from 640 x 640 to 84 x 84 to r
 
 ## Experiment Result
 The result reaches **100%** success rate of reaching different goal positions. An output of 50 episodes of the last evaluation (11401 steps) from [Demo](Demo.ipynb):
+
 <img src="assets/movie.gif" width=640 />
 
 ## Development Packages I Used
