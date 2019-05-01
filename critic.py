@@ -4,9 +4,9 @@ import tensorflow as tf
 class ForwardCritic(tf.keras.Model):
     def __init__(self, out_dim=1):
         super(ForwardCritic, self).__init__()
-        self.conv2d1 = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4, activation=tf.nn.relu, kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
-        self.conv2d2 = tf.keras.layers.Conv2D(filters=64, kernel_size=4, strides=2, activation=tf.nn.relu, kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
-        self.conv2d3 = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=1, activation=tf.nn.relu, kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
+        self.conv2d1 = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4, activation=tf.nn.relu, padding='same', kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
+        self.conv2d2 = tf.keras.layers.Conv2D(filters=64, kernel_size=4, strides=2, activation=tf.nn.relu, padding='same', kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
+        self.conv2d3 = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=1, activation=tf.nn.relu, padding='same', kernel_initializer=tf.keras.initializers.VarianceScaling(2.0))
         self.flatten = tf.keras.layers.Flatten()
         self.dense1 = tf.keras.layers.Dense(256, activation=tf.nn.relu)
         self.dense_action = tf.keras.layers.Dense(256, activation=tf.nn.relu)

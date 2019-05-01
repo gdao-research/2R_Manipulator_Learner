@@ -25,7 +25,7 @@ class ScaleEnv(object):
         a = np.copy(action)
         if a.ndim == 2:
             a = a[0]
-        a *= self.angle_scale*18
+        a *= self.angle_scale
         obs, reward, done, info = self.env.step(a)
         # if self.is_training:
         obs = self.resize_obs(obs)

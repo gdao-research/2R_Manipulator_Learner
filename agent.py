@@ -44,16 +44,16 @@ class Agent(object):
             for i in range(50):
                 buf, sc = self.train_worker.run(self.ep_cnt, training=False)
                 rate += sc
-                # if sc:
-                #     self.f_cnt += 1
-                #     b = [buf[i][0] for i in range(len(buf))]
-                #     with open(f'success{self.ep_cnt}_{self.f_cnt}.pkl', 'wb') as f:
-                #         pickle.dump(b, f, protocol=pickle.HIGHEST_PROTOCOL)
+                if sc:
+                    self.f_cnt += 1
+                    b = [buf[i][0] for i in range(len(buf))]
+                    with open(f'success/success{self.ep_cnt}_{self.f_cnt}.pkl', 'wb') as f:
+                        pickle.dump(b, f, protocol=pickle.HIGHEST_PROTOCOL)
             logger.log(f'Eval {self.ep_cnt}: {rate*2}%')
             if rate*2 >= self.best_rate:
                 d = self.brain.save('./model', self.ep_cnt)
                 logger.log(d)
                 self.best_rate = rate*2
-                # if rate*2 == 100 and self.ep_cnt > 1000:
-                #     logger.log('Rate: 100%')
-                #     sys.exit()
+                if rate*2 == 100 and self.ep_cnt > 1000:
+                    logger.log('Rate: 100%')
+                    sys.exit()
