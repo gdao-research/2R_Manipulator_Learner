@@ -135,9 +135,9 @@ class ManipulatorEnvironment(object):
         return np.clip(links_img + end_effector_img, 0, 255)
 
     def reset(self, current_angles=None, goal=None):
-        # if current_angles is None:
-        #     current_angles = np.random.uniform(-np.pi, np.pi, size=self.nb_actions)
-        current_angles = np.zeros(3)  # Enable for testing
+        if current_angles is None:
+            current_angles = np.random.uniform(-np.pi, np.pi, size=self.nb_actions)
+        # current_angles = np.zeros(3)  # Enable for testing
         self._goal = goal
         self.manipulator.set_current_angles(current_angles)
         self.available_moves = self.max_movements
