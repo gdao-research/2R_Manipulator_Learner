@@ -31,7 +31,7 @@ However, this method solves directly from image based configuration instead of j
 At this stage, I just concentrated on making the solver works, so currently the path might **not** be optimal.
 To make this run faster, I reduced the image size from 640 x 640 to 84 x 84 to reduce the computation time and have more test run with different hyper-parameters.
 
-Please refer to [proposal](pdfs/Proposal.pdf) to get more information. Even though this is a simple problem, but approaching with deep reinforcement learning method seems to be promising direction.
+Please refer to [proposal](pdfs/Proposal.pdf) and [feedbac](pdfs/feedback.pdf) to get more information. Even though this is a simple problem, but approaching with deep reinforcement learning method seems to be promising direction.
 
 ## Experiment Result
 The result reaches **100%** success rate of reaching different goal positions. An output of 50 episodes of the last evaluation (11401 steps) from [Demo](Demo.ipynb):
