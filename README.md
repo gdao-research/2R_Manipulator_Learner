@@ -5,7 +5,7 @@
 In this project, I firstly implemented a simulated system of 2R Manipulator. 
 The simulator is an environment with posibility of forward kinematic embedded method.
 The simulator creates image configuration rather than a traditional joint angles configuration.
-The manipulator always starts with 0 joint angles configuration and random goal location.
+The manipulator always starts with 0 joint angles configuration and random goal location (**confirmed works with random starting joint angles configuration**).
 Sample image rotations and a sample goal configuration:
 <img src="assets/sample.png" />
 
