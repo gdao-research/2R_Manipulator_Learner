@@ -5,9 +5,13 @@
 In this project, I firstly implemented a simulated system of 2R Manipulator. 
 The simulator is an environment with posibility of forward kinematic embedded method.
 The simulator creates image configuration rather than a traditional joint angles configuration.
-The manipulator always starts with 0 joint angles configuration and random goal location (**confirmed works with random starting joint angles configuration**).
+The manipulator always starts with 0 joint angles configuration and random goal location.
 Sample image rotations and a sample goal configuration:
 <img src="assets/sample.png" />
+
+## New Features
+- The code is updated to works with different starting joint angles.
+- Able to control starting joint angles and goal position & orientation [manipulator.py#L137](https://github.com/gdao-research/2R_Manipulator_Learner/blob/master/manipulator.py#L137).
 
 ## Method
 I applied a deep reinforcement learning method to solve the problem directly.
